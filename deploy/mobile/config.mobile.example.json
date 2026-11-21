@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "statePath": "/OPERATOR/PROVISIONED/private/state.sqlite",
+  "listen": {"host": "127.0.0.1", "port": 8123},
+  "volumes": [],
+  "mobile": {
+    "listen": {"host": "127.0.0.1", "port": 8124},
+    "publicOrigin": "https://archive.example.invalid",
+    "replayKeyFile": "/OPERATOR/PROVISIONED/private/mobile-replay.key",
+    "maxAcceptedFileBytes": "68719476736",
+    "stagingBudgetBytes": "137438953472"
+  }
+}

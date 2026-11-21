@@ -1,0 +1,9 @@
+[Unit]
+Description=Private-network egress boundary for Archive video worker
+Before=archive-console-video.service
+[Service]
+Type=oneshot
+ExecStart=/usr/local/libexec/archive-video-egress
+RemainAfterExit=yes
+[Install]
+WantedBy=multi-user.target

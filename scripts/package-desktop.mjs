@@ -1,0 +1,16 @@
+import fs from 'node:fs/promises';
+import path from 'node:path';
+import {packager} from '@electron/packager';
+const arch=process.argv[2]??process.arch;
+if(!['arm64','x64'].includes(arch))throw new Error('Supported package architectures: arm64, x64');
+const manifest=JSON.parse(await fs.readFile('package.json','utf8'));
+const staging=path.resolve('release/staging');
+await fs.rm(staging,{recursive:true,force:true});
+await fs.mkdir(staging,{recursive:true});
+await fs.cp('apps/desktop/dist',path.join(staging,'dist'),{recursive:true});
+await fs.cp('apps/desktop/electron',path.join(staging,'electron'),{recursive:true});
+await fs.mkdir(path.join(staging,'node_modules'),{recursive:true});
+await fs.cp('node_modules/zod',path.join(staging,'node_modules/zod'),{recursive:true});
+await fs.writeFile(path.join(staging,'package.json'),JSON.stringify({name:manifest.name,productName:'The Archive',version:manifest.version,main:'electron/main.cjs',description:'The Archive desktop client with explicit unconfigured service mode',dependencies:{zod:manifest.dependencies.zod}},null,2));
+const outputs=await packager({dir:staging,out:path.resolve('release'),name:'TheArchive',platform:'linux',arch,electronVersion:manifest.devDependencies.electron,asar:true,prune:false,overwrite:true,download:{cacheRoot:process.env.electron_config_cache??'/tmp/archive-electron-cache'}});
+for(const output of outputs)console.log(output);

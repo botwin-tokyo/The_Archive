@@ -1,0 +1,6 @@
+# Reproducible optional mobile runtime set; Python 3.11+.
+argon2-cffi==25.1.0
+argon2-cffi-bindings==26.1.0
+cryptography==50.0.2
+cffi==2.1.1
+pycparser==3.0

@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools==84.0.0"]
+build-backend = "setuptools.build_meta"
+[project]
+name = "archive-console-backend"
+version = "0.2.0"
+requires-python = ">=3.11"
+dependencies = []
+[project.optional-dependencies]
+vault = ["cryptography==50.0.2"]
+telemetry = ["websockets==16.1.1"]
+mobile = ["argon2-cffi==25.1.0", "argon2-cffi-bindings==26.1.0", "cryptography==50.0.2", "cffi==2.1.1", "pycparser==3.0"]
+[project.scripts]
+archive-console-service = "archive_backend.bootstrap:main"
+[tool.setuptools.packages.find]
+where = ["src"]

@@ -1,0 +1,7 @@
+# Review impact before applying: journald settings may affect other services.
+# Prefer a dedicated journal namespace when supported by the target systemd.
+[Journal]
+SystemMaxUse=100M
+MaxRetentionSec=7day
+RateLimitIntervalSec=30s
+RateLimitBurst=1000

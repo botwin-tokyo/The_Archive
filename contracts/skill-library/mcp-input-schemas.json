@@ -1,0 +1,327 @@
+{
+  "skills.status": {
+    "type": "object",
+    "properties": {},
+    "required": [],
+    "additionalProperties": false
+  },
+  "skills.help": {
+    "type": "object",
+    "properties": {},
+    "required": [],
+    "additionalProperties": false
+  },
+  "skills.list": {
+    "type": "object",
+    "properties": {
+      "query": {
+        "type": "string",
+        "maxLength": 256
+      },
+      "cursor": {
+        "type": "string",
+        "maxLength": 256
+      },
+      "limit": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 100
+      },
+      "trashed": {
+        "type": "boolean"
+      }
+    },
+    "required": [],
+    "additionalProperties": false
+  },
+  "skills.get": {
+    "type": "object",
+    "properties": {
+      "id": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 256
+      },
+      "revision": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 9007199254740991
+      }
+    },
+    "required": [
+      "id"
+    ],
+    "additionalProperties": false
+  },
+  "skills.document": {
+    "type": "object",
+    "properties": {
+      "id": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 256
+      },
+      "revision": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 9007199254740991
+      }
+    },
+    "required": [
+      "id"
+    ],
+    "additionalProperties": false
+  },
+  "skills.fileRead": {
+    "type": "object",
+    "properties": {
+      "id": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 256
+      },
+      "path": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 1024
+      },
+      "revision": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 9007199254740991
+      },
+      "offset": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 16777216
+      },
+      "length": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 65536
+      }
+    },
+    "required": [
+      "id",
+      "path"
+    ],
+    "additionalProperties": false
+  },
+  "skills.put": {
+    "type": "object",
+    "properties": {
+      "requestId": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 256
+      },
+      "slug": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 80
+      },
+      "textFiles": {
+        "type": "array",
+        "minItems": 1,
+        "maxItems": 100,
+        "items": {
+          "type": "object",
+          "properties": {
+            "path": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1024
+            },
+            "text": {
+              "type": "string",
+              "maxLength": 131072
+            }
+          },
+          "required": [
+            "path",
+            "text"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "id": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 256
+      },
+      "expectedRevision": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 9007199254740991
+      }
+    },
+    "required": [
+      "requestId",
+      "slug",
+      "textFiles"
+    ],
+    "additionalProperties": false
+  },
+  "skills.uploadBegin": {
+    "type": "object",
+    "properties": {
+      "requestId": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 256
+      },
+      "slug": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 80
+      },
+      "files": {
+        "type": "array",
+        "minItems": 1,
+        "maxItems": 1000,
+        "items": {
+          "type": "object",
+          "properties": {
+            "path": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1024
+            },
+            "size": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 16777216
+            },
+            "sha256": {
+              "type": "string",
+              "minLength": 64,
+              "maxLength": 64
+            }
+          },
+          "required": [
+            "path",
+            "size",
+            "sha256"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "id": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 256
+      },
+      "expectedRevision": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 9007199254740991
+      }
+    },
+    "required": [
+      "requestId",
+      "slug",
+      "files"
+    ],
+    "additionalProperties": false
+  },
+  "skills.uploadStatus": {
+    "type": "object",
+    "properties": {
+      "uploadId": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 256
+      }
+    },
+    "required": [
+      "uploadId"
+    ],
+    "additionalProperties": false
+  },
+  "skills.uploadPublish": {
+    "type": "object",
+    "properties": {
+      "requestId": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 256
+      },
+      "uploadId": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 256
+      }
+    },
+    "required": [
+      "requestId",
+      "uploadId"
+    ],
+    "additionalProperties": false
+  },
+  "skills.uploadCancel": {
+    "type": "object",
+    "properties": {
+      "uploadId": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 256
+      }
+    },
+    "required": [
+      "uploadId"
+    ],
+    "additionalProperties": false
+  },
+  "skills.trash": {
+    "type": "object",
+    "properties": {
+      "requestId": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 256
+      },
+      "id": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 256
+      },
+      "expectedRevision": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 9007199254740991
+      }
+    },
+    "required": [
+      "requestId",
+      "id",
+      "expectedRevision"
+    ],
+    "additionalProperties": false
+  },
+  "skills.restore": {
+    "type": "object",
+    "properties": {
+      "requestId": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 256
+      },
+      "id": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 256
+      },
+      "expectedRevision": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 9007199254740991
+      }
+    },
+    "required": [
+      "requestId",
+      "id",
+      "expectedRevision"
+    ],
+    "additionalProperties": false
+  }
+}

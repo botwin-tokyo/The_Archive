@@ -1,0 +1,326 @@
+{
+  "methods": {
+    "vault.status": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    },
+    "vault.help": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    },
+    "vault.entries.list": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "string",
+          "maxLength": 256
+        },
+        "cursor": {
+          "type": "string",
+          "maxLength": 256
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100
+        },
+        "trashed": {
+          "type": "boolean"
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    },
+    "vault.entries.get": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        }
+      },
+      "required": [
+        "id"
+      ],
+      "additionalProperties": false
+    },
+    "vault.entries.reveal": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "version": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        }
+      },
+      "required": [
+        "id"
+      ],
+      "additionalProperties": false
+    },
+    "vault.entries.create": {
+      "type": "object",
+      "properties": {
+        "requestId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "displayName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512
+        },
+        "login": {
+          "type": "string",
+          "maxLength": 16384
+        },
+        "password": {
+          "type": "string",
+          "maxLength": 16384
+        },
+        "url": {
+          "type": "string",
+          "maxLength": 4096
+        },
+        "notes": {
+          "type": "string",
+          "maxLength": 65536
+        }
+      },
+      "required": [
+        "requestId",
+        "displayName",
+        "login",
+        "password"
+      ],
+      "additionalProperties": false
+    },
+    "vault.entries.update": {
+      "type": "object",
+      "properties": {
+        "requestId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "displayName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512
+        },
+        "url": {
+          "type": "string",
+          "maxLength": 4096
+        },
+        "login": {
+          "type": "string",
+          "maxLength": 16384
+        },
+        "password": {
+          "type": "string",
+          "maxLength": 16384
+        },
+        "notes": {
+          "type": "string",
+          "maxLength": 65536
+        }
+      },
+      "required": [
+        "requestId",
+        "id",
+        "revision"
+      ],
+      "additionalProperties": false
+    },
+    "vault.entries.trash": {
+      "type": "object",
+      "properties": {
+        "requestId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        }
+      },
+      "required": [
+        "requestId",
+        "id",
+        "revision"
+      ],
+      "additionalProperties": false
+    },
+    "vault.entries.restore": {
+      "type": "object",
+      "properties": {
+        "requestId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        }
+      },
+      "required": [
+        "requestId",
+        "id",
+        "revision"
+      ],
+      "additionalProperties": false
+    },
+    "vault.entries.history": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "cursor": {
+          "type": "string",
+          "maxLength": 256
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100
+        }
+      },
+      "required": [
+        "id"
+      ],
+      "additionalProperties": false
+    },
+    "vault.entries.restoreVersion": {
+      "type": "object",
+      "properties": {
+        "requestId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "version": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        }
+      },
+      "required": [
+        "requestId",
+        "id",
+        "revision",
+        "version"
+      ],
+      "additionalProperties": false
+    },
+    "vault.passwords.generate": {
+      "type": "object",
+      "properties": {
+        "length": {
+          "type": "integer",
+          "minimum": 12,
+          "maximum": 256
+        },
+        "alphabet": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 256
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    },
+    "vault.requests.reconcile": {
+      "type": "object",
+      "properties": {
+        "requestId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "operation": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        }
+      },
+      "required": [
+        "requestId",
+        "operation"
+      ],
+      "additionalProperties": false
+    },
+    "vault.backup.export": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    },
+    "vault.backup.import": {
+      "type": "object",
+      "properties": {
+        "requestId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "archive": {
+          "type": "string",
+          "maxLength": 1000000
+        }
+      },
+      "required": [
+        "requestId",
+        "archive"
+      ],
+      "additionalProperties": false
+    }
+  }
+}

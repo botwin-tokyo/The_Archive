@@ -1,0 +1,153 @@
+{
+  "node_id": "@FLEET_NODE_ID@",
+  "source_id": "archive-console",
+  "transport": "push",
+  "expected_heartbeat_s": 15,
+  "required": true,
+  "delivery_capability": "replay",
+  "checks": [
+    "api",
+    "mcp",
+    "storage",
+    "free-space"
+  ],
+  "metrics": {
+    "uptime": {
+      "unit": "seconds",
+      "kind": "gauge",
+      "labels": []
+    },
+    "active-jobs": {
+      "unit": "jobs",
+      "kind": "gauge",
+      "labels": []
+    },
+    "queued-jobs": {
+      "unit": "jobs",
+      "kind": "gauge",
+      "labels": []
+    },
+    "storage-capacity": {
+      "unit": "bytes",
+      "kind": "gauge",
+      "labels": [
+        "slot"
+      ]
+    },
+    "storage-free": {
+      "unit": "bytes",
+      "kind": "gauge",
+      "labels": [
+        "slot"
+      ]
+    }
+  },
+  "schemas": {
+    "@FLEET_NODE_ID@/archive-console.health@1.0.0": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "enum": [
+            "healthy",
+            "degraded",
+            "unhealthy",
+            "unknown"
+          ]
+        },
+        "summary": {
+          "type": "string",
+          "maxLength": 4096
+        },
+        "checks": {
+          "type": "array",
+          "maxItems": 50,
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "maxLength": 4096
+              },
+              "status": {
+                "enum": [
+                  "healthy",
+                  "degraded",
+                  "unhealthy",
+                  "unknown"
+                ]
+              }
+            },
+            "required": [
+              "name",
+              "status"
+            ],
+            "additionalProperties": false
+          }
+        }
+      },
+      "required": [
+        "status",
+        "summary",
+        "checks"
+      ],
+      "additionalProperties": false
+    },
+    "@FLEET_NODE_ID@/archive-console.heartbeat@1.0.0": {
+      "type": "object",
+      "properties": {
+        "uptime_s": {
+          "type": "number",
+          "minimum": 0
+        },
+        "publisher_version": {
+          "type": "string",
+          "maxLength": 4096
+        },
+        "spool_depth": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "last_error": {
+          "type": "string",
+          "maxLength": 4096
+        }
+      },
+      "required": [
+        "uptime_s",
+        "publisher_version"
+      ],
+      "additionalProperties": false
+    },
+    "@FLEET_NODE_ID@/archive-console.metric@1.0.0": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "maxLength": 4096
+        },
+        "value": {
+          "type": "number"
+        },
+        "unit": {
+          "type": "string",
+          "maxLength": 4096
+        },
+        "labels": {
+          "type": "object",
+          "maxProperties": 5,
+          "additionalProperties": {
+            "type": "string",
+            "maxLength": 128
+          }
+        }
+      },
+      "required": [
+        "name",
+        "value",
+        "unit",
+        "labels"
+      ],
+      "additionalProperties": false
+    }
+  }
+}

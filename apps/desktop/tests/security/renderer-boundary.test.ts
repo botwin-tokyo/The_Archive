@@ -1,0 +1,3 @@
+import {readFileSync} from 'node:fs';
+import {describe,it,expect} from 'vitest';
+describe('desktop isolation',()=>{it('uses isolated sandbox and no Node',()=>{const main=readFileSync('apps/desktop/electron/main.cjs','utf8');expect(main).toContain('sandbox:true');expect(main).toContain('contextIsolation:true');expect(main).toContain('nodeIntegration:false');expect(main).toContain("action:'deny'");});it('exposes only a read-only named bridge',()=>{const preload=readFileSync('apps/desktop/electron/preload.cjs','utf8');expect(preload).not.toContain('send:');expect(preload).toContain('getVersion');expect(readFileSync('apps/desktop/index.html','utf8')).toContain("connect-src 'none'");});});

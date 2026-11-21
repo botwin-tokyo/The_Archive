@@ -1,0 +1,5 @@
+[project]
+name = "archive-video-worker"
+version = "0.1.0"
+requires-python = ">=3.12"
+dependencies = ["yt-dlp==2026.8.19", "yt-dlp-ejs==0.8.0"]

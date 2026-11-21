@@ -1,0 +1,37 @@
+# Example only. Replace every placeholder deliberately. No deployment is performed.
+# Include the limit_req_zone directive within nginx's http context.
+limit_req_zone $binary_remote_addr zone=archive_mobile:10m rate=10r/s;
+server {
+    listen 443 ssl;
+    server_name archive.example.invalid;
+    # server_name alone can select this as the default server. Reject before
+    # replacing upstream Host; use the exact publicOrigin authority everywhere.
+    if ($http_host != "archive.example.invalid") { return 421; }
+    ssl_certificate /OPERATOR/PROVISIONED/fullchain.pem;
+    ssl_certificate_key /OPERATOR/PROVISIONED/private-key.pem;
+    ssl_protocols TLSv1.2 TLSv1.3;
+    access_log off; # Optional structured logs must exclude URL credentials/bodies.
+    client_max_body_size 64g;
+    client_body_timeout 30s;
+    location /mobile/v1/ {
+        gzip off;
+        limit_req zone=archive_mobile burst=20 nodelay;
+        proxy_pass http://127.0.0.1:8124;
+        proxy_http_version 1.1;
+        proxy_request_buffering off;
+        proxy_buffering off;
+        proxy_read_timeout 180s;
+        proxy_send_timeout 30s;
+        proxy_set_header Host archive.example.invalid;
+        proxy_set_header X-Forwarded-Proto https;
+        proxy_set_header X-Forwarded-For $remote_addr;
+        proxy_set_header Forwarded "";
+        proxy_set_header X-Forwarded-Host "";
+        proxy_set_header X-Real-IP "";
+        proxy_set_header Connection close;
+        proxy_set_header Accept-Encoding "";
+    }
+    # Do not proxy legacy /v1, /mcp, settings, enrollment or arbitrary destinations.
+    location / { return 404; }
+}
+# No HTTP->HTTPS, trailing-slash, login, CDN or content redirects are configured.

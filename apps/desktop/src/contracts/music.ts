@@ -1,0 +1,33 @@
+import {z} from 'zod';
+import {locationSchema,entryRefSchema} from './schemas';
+const text=z.string().max(500), id=z.string().min(1).max(256);
+export const musicLyricsStatusSchema=z.object({provider:text,saved:z.number().int().nonnegative(),missing:z.number().int().nonnegative(),instrumental:z.number().int().nonnegative(),failed:z.number().int().nonnegative(),pending:z.number().int().nonnegative(),scanning:z.boolean()}).strict();
+export const musicSelectionSchema=z.object({kind:z.enum(['track','album','artist']),id:z.string().regex(/^[A-Za-z0-9]{22}$/)}).strict();
+export const musicItemSchema=musicSelectionSchema.extend({title:text,artist:text,year:text,trackCount:z.number().int().min(0).max(500),durationMs:z.number().int().nonnegative(),disc:z.number().int().min(1),number:z.number().int().min(1),available:z.boolean()}).strict();
+export const musicStatusSchema=z.object({enabled:z.boolean(),available:z.boolean(),message:text,provider:text,defaultDestination:locationSchema,mcp:z.boolean()}).strict();
+export const musicSearchSchema=z.object({id,state:z.enum(['queued','running','completed','failed']),items:z.array(musicItemSchema).max(20),cursor:z.string().max(256).nullable(),error:text.nullable()}).strict();
+export const musicReleaseSchema=z.object({id:z.string().regex(/^[A-Za-z0-9]{22}$/),title:text,year:text,trackCount:z.number().int().min(1).max(500),releaseType:text}).strict();
+export const musicReleaseJobSchema=musicReleaseSchema.extend({state:z.enum(['queued','resolving','running','paused','waiting-for-drive','completed','partial','failed','canceled']),jobId:id.nullable(),completedTracks:z.number().int().nonnegative(),totalTracks:z.number().int().min(1).max(500),error:text.nullable()}).strict();
+export const musicPlanSchema=z.object({id,revision:z.number().int().positive(),state:z.enum(['queued','running','completed','failed']),title:text,artist:text,year:text,kind:z.enum(['track','album','artist']),tracks:z.array(musicItemSchema).max(500),expectedTracks:z.number().int().min(0).max(250000),releases:z.array(musicReleaseSchema).max(500).optional(),expiresAt:z.number(),error:text.nullable()}).strict();
+export const musicTrackSchema=z.object({id,title:text,artist:text,disc:z.number().int().positive(),number:z.number().int().positive(),state:z.enum(['queued','resolving-source','downloading','converting','verifying','ready-to-import','importing','completed','already-present','paused','waiting-for-drive','blocked-auth','conflict','failed','canceled']),attempt:z.number().int().nonnegative(),error:text.nullable(),entry:entryRefSchema.nullable()}).strict();
+export const musicJobSchema=z.object({id,revision:z.number().int().positive(),title:text,artist:text,state:z.enum(['queued','running','paused','waiting-for-drive','completed','partial','failed','canceled']),destination:locationSchema,createdAt:z.number(),kind:z.literal('artist').optional(),releases:z.array(musicReleaseJobSchema).max(500).optional(),tracks:z.array(musicTrackSchema).max(500)}).strict();
+export const musicJobsSchema=z.object({items:z.array(musicJobSchema).max(100),cursor:z.string().nullable()}).strict();
+export type MusicItem=z.infer<typeof musicItemSchema>;
+export type MusicSelection=z.infer<typeof musicSelectionSchema>;
+export type MusicPlan=z.infer<typeof musicPlanSchema>;
+export type MusicJob=z.infer<typeof musicJobSchema>;
+export type MusicSearch=z.infer<typeof musicSearchSchema>;
+export interface MusicPort {
+ lyricsStatus():Promise<z.infer<typeof musicLyricsStatusSchema>>;
+ backfillLyrics(args:{requestId:string}):Promise<z.infer<typeof musicLyricsStatusSchema>>;
+ artwork(id:string):Promise<{dataUrl:string|null}>;
+ status():Promise<z.infer<typeof musicStatusSchema>>;
+ search(args:{requestId:string;query:string;kind:'track'|'album'|'artist';cursor?:string}):Promise<MusicSearch>;
+ getSearch(id:string):Promise<MusicSearch>;
+ resolve(args:{requestId:string;selection:MusicSelection}):Promise<MusicPlan>;
+ getPlan(id:string):Promise<MusicPlan>;
+ enqueue(args:{requestId:string;planId:string;planRevision:number;destination:z.infer<typeof locationSchema>}):Promise<MusicJob>;
+ listJobs(args?:{cursor?:string}):Promise<z.infer<typeof musicJobsSchema>>;
+ getJob(id:string):Promise<MusicJob>;
+ control(args:{id:string;revision:number;action:'pause'|'resume'|'cancel'|'retry-failed'}):Promise<MusicJob>;
+}

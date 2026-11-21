@@ -1,0 +1,9 @@
+[Unit]
+Description=Private-network egress boundary for Archive anime worker
+Before=archive-console-anime.service
+[Service]
+Type=oneshot
+ExecStart=/usr/local/libexec/archive-anime-egress
+RemainAfterExit=yes
+[Install]
+WantedBy=multi-user.target

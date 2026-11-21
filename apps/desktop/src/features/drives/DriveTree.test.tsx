@@ -1,0 +1,20 @@
+import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { domainError, type DirectoryPage, type DirectoryQuery, type Drive, type Entry, type FileReadPort } from '../../contracts';
+import { DriveTree } from './DriveTree';
+const drive = (id: string, overrides: Partial<Drive> = {}): Drive => ({ id, label: id === 'a' ? 'File Storage' : 'Memory Harness Backups', role: id === 'a' ? 'files' : 'harness-backups', state: 'online', configured: true, capacityBytes: null, freeBytes: null, temperatureC: null, revision: 1, simulated: true, capabilities: { browse: true, write: true, trash: true, purge: true }, ...overrides });
+const folder = (driveId: string, name: string): Entry => ({ id: `${driveId}-${name}`, driveId, path: name, parentPath: '', name, revision: 1, kind: 'directory', type: 'Folder', sizeBytes: null, createdAt: null, modifiedAt: null, capabilities: { read: true, download: true, copy: true, move: true, rename: true, trash: true } });
+beforeEach(() => localStorage.clear()); afterEach(cleanup);
+describe('independent lazy drive trees', () => {
+  it('expands without navigation and keeps drive roots distinct', async () => {
+    const list = vi.fn(async (query: DirectoryQuery) => ({ schemaVersion: 1 as const, requestId: query.requestId, location: query.location, revision: 1, entries: query.location.path ? [] : [folder(query.location.driveId, 'Documents')], nextCursor: null, total: 1, stale: false })); const navigate = vi.fn(); render(<DriveTree drives={[drive('a'), drive('b')]} files={{ list, stat: vi.fn() }} location={{ driveId: 'a', path: '' }} onNavigate={navigate}/>);
+    await screen.findByText('Documents'); expect(list).toHaveBeenCalledTimes(1); fireEvent.click(screen.getByRole('button', { name: 'Expand Memory Harness Backups' })); await waitFor(() => expect(screen.getAllByText('Documents')).toHaveLength(2)); expect(navigate).not.toHaveBeenCalled(); fireEvent.click(screen.getAllByRole('button', { name: 'Documents' })[1]); expect(navigate).toHaveBeenLastCalledWith({ driveId: 'b', path: 'Documents' }); fireEvent.click(screen.getAllByRole('button', { name: 'Expand Documents' })[0]); await screen.findByText('No folders'); expect(navigate).toHaveBeenCalledTimes(1); expect(screen.getAllByText('Capacity unknown')).toHaveLength(2);
+  });
+  it('retains an offline drive while another stays browsable', async () => {
+    const list = vi.fn(async (query: DirectoryQuery) => ({ schemaVersion: 1 as const, requestId: query.requestId, location: query.location, revision: 1, entries: [folder('a', 'Available')], total: 1, nextCursor: null, stale: false })); render(<DriveTree drives={[drive('a'), drive('b', { state: 'offline', capabilities: { browse: false, write: false, trash: false, purge: false } })]} files={{ list, stat: vi.fn() }} location={{ driveId: 'a', path: '' }} onNavigate={vi.fn()}/>);
+    await screen.findByText('Available'); expect(screen.getByText('Memory Harness Backups')).toBeTruthy(); expect(screen.getByText('Offline')).toBeTruthy(); expect((screen.getByRole('button', { name: 'Expand Memory Harness Backups' }) as HTMLButtonElement).disabled).toBe(true); expect(list).toHaveBeenCalledTimes(1);
+  });
+  it('isolates one listing failure and exposes retry', async () => {
+    const files: FileReadPort = { list: vi.fn(async (query: DirectoryQuery): Promise<DirectoryPage> => { if (query.location.driveId === 'a') throw domainError('PERMISSION_DENIED', 'Folder access denied.'); return { schemaVersion: 1, requestId: query.requestId, location: query.location, revision: 1, entries: [folder('b', 'Backups')], total: 1, nextCursor: null, stale: false }; }), stat: vi.fn() }; render(<DriveTree drives={[drive('a'), drive('b')]} files={files} location={{ driveId: 'a', path: '' }} onNavigate={vi.fn()}/>); await screen.findByText('Folder access denied.'); fireEvent.click(screen.getByRole('button', { name: 'Expand Memory Harness Backups' })); await screen.findByText('Backups'); expect(screen.getByRole('button', { name: 'Retry' })).toBeTruthy();
+  });
+});

@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "statePath": null,
+  "listen": null,
+  "volumes": [],
+  "maxWorkers": 2,
+  "maxPendingJobs": 128,
+  "minFreeBytes": 67108864,
+  "telemetry": {"enabled": false, "endpoint": "", "intervalSeconds": 30}
+}

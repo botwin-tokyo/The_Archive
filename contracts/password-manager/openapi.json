@@ -1,0 +1,789 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Archive Password Manager",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://archive.example.com/vault/v1"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "vaultBearer": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    }
+  },
+  "paths": {
+    "/status": {
+      "get": {
+        "operationId": "vault.status",
+        "security": [
+          {
+            "vaultBearer": []
+          }
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "No-store result envelope."
+          },
+          "403": {
+            "description": "Credential lacks required vault permission"
+          },
+          "409": {
+            "description": "Revision or request identity conflict"
+          },
+          "503": {
+            "description": "Vault unavailable; writes require both replicas"
+          }
+        }
+      }
+    },
+    "/entries/search": {
+      "post": {
+        "operationId": "vault.entries.list",
+        "security": [
+          {
+            "vaultBearer": []
+          }
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "No-store result envelope."
+          },
+          "403": {
+            "description": "Credential lacks required vault permission"
+          },
+          "409": {
+            "description": "Revision or request identity conflict"
+          },
+          "503": {
+            "description": "Vault unavailable; writes require both replicas"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "query": {
+                    "type": "string",
+                    "maxLength": 256
+                  },
+                  "cursor": {
+                    "type": "string",
+                    "maxLength": 256
+                  },
+                  "limit": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 100
+                  },
+                  "trashed": {
+                    "type": "boolean"
+                  }
+                },
+                "required": [],
+                "additionalProperties": false
+              }
+            }
+          }
+        }
+      }
+    },
+    "/entries/{id}": {
+      "get": {
+        "operationId": "vault.entries.get",
+        "security": [
+          {
+            "vaultBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 256
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "No-store result envelope."
+          },
+          "403": {
+            "description": "Credential lacks required vault permission"
+          },
+          "409": {
+            "description": "Revision or request identity conflict"
+          },
+          "503": {
+            "description": "Vault unavailable; writes require both replicas"
+          }
+        }
+      },
+      "patch": {
+        "operationId": "vault.entries.update",
+        "security": [
+          {
+            "vaultBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 256
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "No-store result envelope."
+          },
+          "403": {
+            "description": "Credential lacks required vault permission"
+          },
+          "409": {
+            "description": "Revision or request identity conflict"
+          },
+          "503": {
+            "description": "Vault unavailable; writes require both replicas"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "requestId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 256
+                  },
+                  "revision": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 9007199254740991
+                  },
+                  "displayName": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 512
+                  },
+                  "url": {
+                    "type": "string",
+                    "maxLength": 4096
+                  },
+                  "login": {
+                    "type": "string",
+                    "maxLength": 16384
+                  },
+                  "password": {
+                    "type": "string",
+                    "maxLength": 16384
+                  },
+                  "notes": {
+                    "type": "string",
+                    "maxLength": 65536
+                  }
+                },
+                "required": [
+                  "requestId",
+                  "revision"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        }
+      }
+    },
+    "/entries/{id}/reveal": {
+      "post": {
+        "operationId": "vault.entries.reveal",
+        "security": [
+          {
+            "vaultBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 256
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "No-store result envelope."
+          },
+          "403": {
+            "description": "Credential lacks required vault permission"
+          },
+          "409": {
+            "description": "Revision or request identity conflict"
+          },
+          "503": {
+            "description": "Vault unavailable; writes require both replicas"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "version": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 9007199254740991
+                  }
+                },
+                "required": [],
+                "additionalProperties": false
+              }
+            }
+          }
+        }
+      }
+    },
+    "/entries": {
+      "post": {
+        "operationId": "vault.entries.create",
+        "security": [
+          {
+            "vaultBearer": []
+          }
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "No-store result envelope."
+          },
+          "403": {
+            "description": "Credential lacks required vault permission"
+          },
+          "409": {
+            "description": "Revision or request identity conflict"
+          },
+          "503": {
+            "description": "Vault unavailable; writes require both replicas"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "requestId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 256
+                  },
+                  "displayName": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 512
+                  },
+                  "login": {
+                    "type": "string",
+                    "maxLength": 16384
+                  },
+                  "password": {
+                    "type": "string",
+                    "maxLength": 16384
+                  },
+                  "url": {
+                    "type": "string",
+                    "maxLength": 4096
+                  },
+                  "notes": {
+                    "type": "string",
+                    "maxLength": 65536
+                  }
+                },
+                "required": [
+                  "requestId",
+                  "displayName",
+                  "login",
+                  "password"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        }
+      }
+    },
+    "/entries/{id}/trash": {
+      "post": {
+        "operationId": "vault.entries.trash",
+        "security": [
+          {
+            "vaultBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 256
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "No-store result envelope."
+          },
+          "403": {
+            "description": "Credential lacks required vault permission"
+          },
+          "409": {
+            "description": "Revision or request identity conflict"
+          },
+          "503": {
+            "description": "Vault unavailable; writes require both replicas"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "requestId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 256
+                  },
+                  "revision": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 9007199254740991
+                  }
+                },
+                "required": [
+                  "requestId",
+                  "revision"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        }
+      }
+    },
+    "/entries/{id}/restore": {
+      "post": {
+        "operationId": "vault.entries.restore",
+        "security": [
+          {
+            "vaultBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 256
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "No-store result envelope."
+          },
+          "403": {
+            "description": "Credential lacks required vault permission"
+          },
+          "409": {
+            "description": "Revision or request identity conflict"
+          },
+          "503": {
+            "description": "Vault unavailable; writes require both replicas"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "requestId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 256
+                  },
+                  "revision": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 9007199254740991
+                  }
+                },
+                "required": [
+                  "requestId",
+                  "revision"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        }
+      }
+    },
+    "/entries/{id}/history": {
+      "post": {
+        "operationId": "vault.entries.history",
+        "security": [
+          {
+            "vaultBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 256
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "No-store result envelope."
+          },
+          "403": {
+            "description": "Credential lacks required vault permission"
+          },
+          "409": {
+            "description": "Revision or request identity conflict"
+          },
+          "503": {
+            "description": "Vault unavailable; writes require both replicas"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "cursor": {
+                    "type": "string",
+                    "maxLength": 256
+                  },
+                  "limit": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 100
+                  }
+                },
+                "required": [],
+                "additionalProperties": false
+              }
+            }
+          }
+        }
+      }
+    },
+    "/entries/{id}/restore-version": {
+      "post": {
+        "operationId": "vault.entries.restoreVersion",
+        "security": [
+          {
+            "vaultBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 256
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "No-store result envelope."
+          },
+          "403": {
+            "description": "Credential lacks required vault permission"
+          },
+          "409": {
+            "description": "Revision or request identity conflict"
+          },
+          "503": {
+            "description": "Vault unavailable; writes require both replicas"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "requestId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 256
+                  },
+                  "revision": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 9007199254740991
+                  },
+                  "version": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 9007199254740991
+                  }
+                },
+                "required": [
+                  "requestId",
+                  "revision",
+                  "version"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        }
+      }
+    },
+    "/passwords/generate": {
+      "post": {
+        "operationId": "vault.passwords.generate",
+        "security": [
+          {
+            "vaultBearer": []
+          }
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "No-store result envelope."
+          },
+          "403": {
+            "description": "Credential lacks required vault permission"
+          },
+          "409": {
+            "description": "Revision or request identity conflict"
+          },
+          "503": {
+            "description": "Vault unavailable; writes require both replicas"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "length": {
+                    "type": "integer",
+                    "minimum": 12,
+                    "maximum": 256
+                  },
+                  "alphabet": {
+                    "type": "string",
+                    "minLength": 2,
+                    "maxLength": 256
+                  }
+                },
+                "required": [],
+                "additionalProperties": false
+              }
+            }
+          }
+        }
+      }
+    },
+    "/requests/reconcile": {
+      "post": {
+        "operationId": "vault.requests.reconcile",
+        "security": [
+          {
+            "vaultBearer": []
+          }
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "No-store result envelope."
+          },
+          "403": {
+            "description": "Credential lacks required vault permission"
+          },
+          "409": {
+            "description": "Revision or request identity conflict"
+          },
+          "503": {
+            "description": "Vault unavailable; writes require both replicas"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "requestId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 256
+                  },
+                  "operation": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 256
+                  }
+                },
+                "required": [
+                  "requestId",
+                  "operation"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        }
+      }
+    },
+    "/backup/export": {
+      "post": {
+        "operationId": "vault.backup.export",
+        "security": [
+          {
+            "vaultBearer": []
+          }
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "No-store result envelope."
+          },
+          "403": {
+            "description": "Credential lacks required vault permission"
+          },
+          "409": {
+            "description": "Revision or request identity conflict"
+          },
+          "503": {
+            "description": "Vault unavailable; writes require both replicas"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {},
+                "required": [],
+                "additionalProperties": false
+              }
+            }
+          }
+        }
+      }
+    },
+    "/backup/import": {
+      "post": {
+        "operationId": "vault.backup.import",
+        "security": [
+          {
+            "vaultBearer": []
+          }
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "No-store result envelope."
+          },
+          "403": {
+            "description": "Credential lacks required vault permission"
+          },
+          "409": {
+            "description": "Revision or request identity conflict"
+          },
+          "503": {
+            "description": "Vault unavailable; writes require both replicas"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "requestId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 256
+                  },
+                  "archive": {
+                    "type": "string",
+                    "maxLength": 1000000
+                  }
+                },
+                "required": [
+                  "requestId",
+                  "archive"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

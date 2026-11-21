@@ -1,0 +1,45 @@
+[Unit]
+Description=The Archive independent local storage service
+After=local-fs.target network.target
+StartLimitIntervalSec=60
+StartLimitBurst=5
+
+[Service]
+Type=simple
+User=archive-console
+Group=archive-console
+WorkingDirectory=@RUNTIME_ROOT@/archive-console-service
+Environment=PYTHONPATH=@RUNTIME_ROOT@/archive-console-service/backend
+ExecStart=/usr/bin/python3 -m archive_backend --config /etc/archive-console/config.json
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=20
+KillMode=control-group
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+# RestrictSUIDSGID blocks openat2, which the storage boundary requires.
+# NoNewPrivileges and the empty capability set still prevent privilege gains.
+RestrictSUIDSGID=false
+LockPersonality=true
+CapabilityBoundingSet=
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+ReadWritePaths=@RUNTIME_ROOT@/archive-console-service/state
+# REQUIRED deployment drop-in: add all verified volume mount points.
+# Binding only a managed subdirectory creates a nested mount rejected by the
+# volume identity checks. Service-owned roots must still exclude other writers.
+# No guessed drive paths are included in this template.
+MemoryMax=1G
+TasksMax=64
+LimitNOFILE=1024
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=archive-console
+
+[Install]
+WantedBy=multi-user.target

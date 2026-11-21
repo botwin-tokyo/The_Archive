@@ -1,0 +1,602 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Archive Skill Library",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://archive.example.com/skills/v1"
+    }
+  ],
+  "security": [
+    {
+      "bearer": []
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearer": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    }
+  },
+  "paths": {
+    "/status": {
+      "get": {
+        "operationId": "skills.status",
+        "description": "Requires skills.read. Returns {ok:true,result:...}; errors return {ok:false,error:...}.",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Operation result"
+          }
+        }
+      }
+    },
+    "/help": {
+      "get": {
+        "operationId": "skills.help",
+        "description": "Requires skills.read. Returns {ok:true,result:...}; errors return {ok:false,error:...}.",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Operation result"
+          }
+        }
+      }
+    },
+    "/skills": {
+      "get": {
+        "operationId": "skills.list",
+        "description": "Requires skills.read. Returns {ok:true,result:...}; errors return {ok:false,error:...}.",
+        "parameters": [
+          {
+            "name": "query",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 256
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 256
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            }
+          },
+          {
+            "name": "trashed",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Operation result"
+          }
+        }
+      }
+    },
+    "/skills/put": {
+      "post": {
+        "operationId": "skills.put",
+        "description": "Requires skills.write. Returns {ok:true,result:...}; errors return {ok:false,error:...}.",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Operation result"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "requestId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 256
+                  },
+                  "slug": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 80
+                  },
+                  "textFiles": {
+                    "type": "array",
+                    "minItems": 1,
+                    "maxItems": 100,
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "path": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 1024
+                        },
+                        "text": {
+                          "type": "string",
+                          "maxLength": 131072
+                        }
+                      },
+                      "required": [
+                        "path",
+                        "text"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "id": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 256
+                  },
+                  "expectedRevision": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  }
+                },
+                "required": [
+                  "requestId",
+                  "slug",
+                  "textFiles"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        }
+      }
+    },
+    "/skills/{id}": {
+      "get": {
+        "operationId": "skills.get",
+        "description": "Requires skills.read. Returns {ok:true,result:...}; errors return {ok:false,error:...}.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 256
+            }
+          },
+          {
+            "name": "revision",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Operation result"
+          }
+        }
+      }
+    },
+    "/skills/{id}/document": {
+      "get": {
+        "operationId": "skills.document",
+        "description": "Requires skills.read. Returns {ok:true,result:...}; errors return {ok:false,error:...}.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 256
+            }
+          },
+          {
+            "name": "revision",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Operation result"
+          }
+        }
+      }
+    },
+    "/skills/{id}/trash": {
+      "post": {
+        "operationId": "skills.trash",
+        "description": "Requires skills.write. Returns {ok:true,result:...}; errors return {ok:false,error:...}.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 256
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Operation result"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "requestId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 256
+                  },
+                  "expectedRevision": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  }
+                },
+                "required": [
+                  "requestId",
+                  "expectedRevision"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        }
+      }
+    },
+    "/skills/{id}/restore": {
+      "post": {
+        "operationId": "skills.restore",
+        "description": "Requires skills.write. Returns {ok:true,result:...}; errors return {ok:false,error:...}.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 256
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Operation result"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "requestId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 256
+                  },
+                  "expectedRevision": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  }
+                },
+                "required": [
+                  "requestId",
+                  "expectedRevision"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        }
+      }
+    },
+    "/uploads": {
+      "post": {
+        "operationId": "skills.uploadBegin",
+        "description": "Requires skills.write. Returns {ok:true,result:...}; errors return {ok:false,error:...}.",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Operation result"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "requestId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 256
+                  },
+                  "slug": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 80
+                  },
+                  "files": {
+                    "type": "array",
+                    "minItems": 1,
+                    "maxItems": 1000,
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "path": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 1024
+                        },
+                        "size": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 16777216
+                        },
+                        "sha256": {
+                          "type": "string",
+                          "minLength": 64,
+                          "maxLength": 64
+                        }
+                      },
+                      "required": [
+                        "path",
+                        "size",
+                        "sha256"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "id": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 256
+                  },
+                  "expectedRevision": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  }
+                },
+                "required": [
+                  "requestId",
+                  "slug",
+                  "files"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        }
+      }
+    },
+    "/uploads/{uploadId}": {
+      "get": {
+        "operationId": "skills.uploadStatus",
+        "description": "Requires skills.write. Returns {ok:true,result:...}; errors return {ok:false,error:...}.",
+        "parameters": [
+          {
+            "name": "uploadId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 256
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Operation result"
+          }
+        }
+      },
+      "delete": {
+        "operationId": "skills.uploadCancel",
+        "description": "Requires skills.write. Returns {ok:true,result:...}; errors return {ok:false,error:...}.",
+        "parameters": [
+          {
+            "name": "uploadId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 256
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Operation result"
+          }
+        }
+      }
+    },
+    "/uploads/{uploadId}/publish": {
+      "post": {
+        "operationId": "skills.uploadPublish",
+        "description": "Requires skills.write. Returns {ok:true,result:...}; errors return {ok:false,error:...}.",
+        "parameters": [
+          {
+            "name": "uploadId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 256
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Operation result"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "requestId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 256
+                  }
+                },
+                "required": [
+                  "requestId"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        }
+      }
+    },
+    "/uploads/{uploadId}/files": {
+      "put": {
+        "operationId": "skills.uploadChunk",
+        "description": "skills.write; retry identical bytes at the same offset; maximum chunk 1 MiB.",
+        "parameters": [
+          {
+            "name": "uploadId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "path",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/octet-stream": {
+              "schema": {
+                "type": "string",
+                "format": "binary"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Upload state and durable acknowledged offsets"
+          }
+        }
+      }
+    },
+    "/skills/{id}/files": {
+      "get": {
+        "operationId": "skills.download",
+        "description": "skills.read; verified file bytes, attachment disposition, no-store. Maximum 16 MiB.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "path",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "revision",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "File bytes",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

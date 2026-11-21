@@ -1,0 +1,9 @@
+[Unit]
+Description=Private-network egress boundary for Archive music worker
+Before=archive-console-music.service
+[Service]
+Type=oneshot
+ExecStart=/usr/local/libexec/archive-music-egress
+RemainAfterExit=yes
+[Install]
+WantedBy=multi-user.target

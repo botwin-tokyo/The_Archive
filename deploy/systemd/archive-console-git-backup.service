@@ -1,0 +1,13 @@
+[Unit]
+Description=Request a durable GitHub backup run
+Wants=archive-console.service network-online.target
+After=archive-console.service network-online.target
+[Service]
+Type=oneshot
+User=archive-console
+Group=archive-console
+ExecStart=/usr/bin/python3 @RUNTIME_ROOT@/archive-console-service/trigger-git-backup.py
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+TimeoutStartSec=120

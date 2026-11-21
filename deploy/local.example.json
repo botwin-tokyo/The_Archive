@@ -1,0 +1,11 @@
+{
+  "RUNTIME_ROOT": "/srv/the-archive/runtime",
+  "DATA_MOUNT": "/mnt/archive-data",
+  "DATA_UUID": "",
+  "GIT_MOUNT": "/mnt/archive-git",
+  "GIT_UUID": "",
+  "FILES_MOUNT": "/mnt/archive-files",
+  "BACKUPS_MOUNT": "/mnt/archive-backups",
+  "FLEET_ENDPOINT": "",
+  "FLEET_NODE_ID": ""
+}

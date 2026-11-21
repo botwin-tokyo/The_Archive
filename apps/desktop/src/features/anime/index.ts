@@ -1,0 +1,1 @@
+export {AnimeView} from './AnimeView';

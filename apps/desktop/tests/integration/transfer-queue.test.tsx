@@ -1,0 +1,7 @@
+import React from 'react';
+import {afterEach,describe,it,expect} from 'vitest';
+import {cleanup,fireEvent,render,screen,waitFor,act} from '@testing-library/react';
+import {createMockBackend} from '../../src/adapters/mock';
+import {createJobStore,TransferQueue} from '../../src/features/transfers';
+afterEach(cleanup);
+describe('shared queue UI',()=>{it('renders useful rows and retains selection through route remount',async()=>{const backend=createMockBackend();const store=createJobStore(backend.jobs);await store.reconcile();const view=render(<TransferQueue store={store}/>);expect(screen.getAllByRole('listitem')).toHaveLength(3);fireEvent.click(screen.getAllByRole('listitem')[0].querySelector('.job-row')!);const selected=store.getSnapshot().selectedId;view.unmount();render(<TransferQueue store={store} full/>);expect(store.getSnapshot().selectedId).toBe(selected);expect(document.querySelector('.job-item.selected')).toBeTruthy();});it('shows pause acknowledgment before adapter completes the pause',async()=>{const backend=createMockBackend();const store=createJobStore(backend.jobs);store.start();await store.reconcile();render(<TransferQueue store={store}/>);const pause=screen.getAllByRole('button',{name:/^Pause /})[0];fireEvent.click(pause);await waitFor(()=>expect(screen.getByText('Pausing')).toBeTruthy());act(()=>backend.clock.advance(500));await waitFor(()=>expect(screen.getAllByText('Paused').length).toBeGreaterThan(0));store.stop();});});

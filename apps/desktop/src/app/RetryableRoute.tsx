@@ -1,0 +1,4 @@
+import {Component,Suspense,lazy,useMemo,useState,createElement,type ComponentType,type ReactNode} from 'react';
+import {PanelFallback} from '../shared/ui';
+class RouteBoundary extends Component<{children:ReactNode;name:string;onRetry:()=>void},{failed:boolean}>{state={failed:false};static getDerivedStateFromError(){return {failed:true};}render(){return this.state.failed?<PanelFallback name={this.props.name} onRetry={this.props.onRetry}/>:this.props.children;}}
+export function RetryableRoute<P extends object>({load,routeProps,name}:{load:()=>Promise<{default:ComponentType<P>}>;routeProps:P;name:string}){const [attempt,setAttempt]=useState(0);const View=useMemo(()=>lazy(load),[load,attempt]);return <RouteBoundary key={attempt} name={name} onRetry={()=>setAttempt(value=>value+1)}><Suspense fallback={<div className="empty-state" role="status">Loading {name}…</div>}>{createElement(View as ComponentType<P>,routeProps)}</Suspense></RouteBoundary>;}

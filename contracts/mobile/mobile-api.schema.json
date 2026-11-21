@@ -1,0 +1,1153 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:archive:mobile:wire:v1",
+  "title": "Archive Mobile Wire v1 (native only)",
+  "description": "No raw tokens or wire Session objects may cross the JS bridge. Fixed native routes only; no credential-bearing URLs. Deployed availability is not implied.",
+  "oneOf": [
+    {
+      "$ref": "#/$defs/Discovery"
+    },
+    {
+      "$ref": "#/$defs/Login"
+    },
+    {
+      "$ref": "#/$defs/Refresh"
+    },
+    {
+      "$ref": "#/$defs/Session"
+    },
+    {
+      "$ref": "#/$defs/UploadRequest"
+    },
+    {
+      "$ref": "#/$defs/UploadAdmission"
+    },
+    {
+      "$ref": "#/$defs/DownloadRequest"
+    },
+    {
+      "$ref": "#/$defs/DownloadRepresentation"
+    },
+    {
+      "$ref": "#/$defs/CompleteDownload"
+    },
+    {
+      "$ref": "#/$defs/Call"
+    },
+    {
+      "$ref": "#/$defs/Profile"
+    },
+    {
+      "$ref": "#/$defs/DownloadPreparing"
+    },
+    {
+      "$ref": "#/$defs/DownloadCanceled"
+    },
+    {
+      "$ref": "#/$defs/DownloadCompleteReceipt"
+    },
+    {
+      "$ref": "#/$defs/DownloadManifestRequest"
+    },
+    {
+      "$ref": "#/$defs/DownloadManifest"
+    }
+  ],
+  "$defs": {
+    "EntryRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["driveId", "path", "id", "revision", "generation"],
+      "properties": {
+        "driveId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "path": {
+          "type": "string",
+          "maxLength": 4096,
+          "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.?(?:/|$))(?!.*[\\\\\\u0000-\\u001f]).*$"
+        },
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "revision": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "generation": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        }
+      }
+    },
+    "Login": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["username", "password", "deviceLabel", "requestId"],
+      "properties": {
+        "username": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "password": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1024
+        },
+        "deviceLabel": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "requestId": {
+          "type": "string",
+          "format": "uuid"
+        }
+      }
+    },
+    "Refresh": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["refreshToken", "requestId"],
+      "properties": {
+        "refreshToken": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512
+        },
+        "requestId": {
+          "type": "string",
+          "format": "uuid"
+        }
+      }
+    },
+    "Session": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "serverId",
+        "accountId",
+        "deviceSessionId",
+        "accessToken",
+        "refreshToken",
+        "accessExpiresAt",
+        "refreshExpiresAt"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": 1
+        },
+        "serverId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "accountId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "deviceSessionId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "accessToken": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512
+        },
+        "refreshToken": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512
+        },
+        "accessExpiresAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "refreshExpiresAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "Limits": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "networkTransfers",
+        "perDirection",
+        "maxPageSize",
+        "maxAcceptedFileBytes",
+        "stagingBudgetBytes"
+      ],
+      "properties": {
+        "networkTransfers": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 2
+        },
+        "perDirection": {
+          "const": 1
+        },
+        "maxPageSize": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 500
+        },
+        "maxAcceptedFileBytes": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]*)$",
+          "maxLength": 20
+        },
+        "stagingBudgetBytes": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]*)$",
+          "maxLength": 20
+        }
+      }
+    },
+    "Discovery": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "protocol",
+        "serverId",
+        "minimumClientContract",
+        "supportedContractVersions",
+        "authentication",
+        "limits"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": 1
+        },
+        "protocol": {
+          "const": "archive_mobile_file_v1"
+        },
+        "serverId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "minimumClientContract": {
+          "const": 1
+        },
+        "supportedContractVersions": {
+          "type": "array",
+          "items": {
+            "const": 1
+          },
+          "minItems": 1,
+          "maxItems": 1
+        },
+        "authentication": {
+          "const": "password"
+        },
+        "limits": {
+          "$ref": "#/$defs/Limits"
+        }
+      }
+    },
+    "UploadRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "requestId",
+        "destination",
+        "name",
+        "size",
+        "sha256",
+        "collisionPolicy"
+      ],
+      "properties": {
+        "requestId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "destination": {
+          "$ref": "#/$defs/EntryRef"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 255
+        },
+        "size": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]*)$",
+          "maxLength": 20
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "collisionPolicy": {
+          "enum": ["ask", "skip", "keep_both", "replace"]
+        },
+        "expectedCollision": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/EntryRef"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Optional exact target reviewed for an explicit replacement admission; null means reviewed absent. Omitted on ordinary uploads."
+        }
+      }
+    },
+    "UploadAdmission": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "requestId",
+        "receiptId",
+        "serverJobId",
+        "transferId",
+        "acceptedSize",
+        "acceptedSha256",
+        "durableOffset",
+        "contentPath",
+        "transferToken",
+        "expiresAt",
+        "protocol",
+        "state",
+        "outcome",
+        "entry",
+        "verification",
+        "error",
+        "controls",
+        "cleanupState"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": 1
+        },
+        "requestId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "receiptId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "serverJobId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "transferId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "acceptedSize": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]*)$",
+          "maxLength": 20
+        },
+        "acceptedSha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "durableOffset": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]*)$",
+          "maxLength": 20
+        },
+        "contentPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1024
+        },
+        "transferToken": {
+          "type": ["string", "null"],
+          "minLength": 32,
+          "maxLength": 512
+        },
+        "expiresAt": {
+          "type": ["string", "null"],
+          "format": "date-time"
+        },
+        "protocol": {
+          "const": "archive_mobile_file_v1"
+        },
+        "state": {
+          "enum": [
+            "queued",
+            "preparing",
+            "running",
+            "verifying",
+            "committing",
+            "completed",
+            "pausing",
+            "paused",
+            "waiting-for-client",
+            "waiting-for-drive",
+            "needs-decision",
+            "failed",
+            "canceling",
+            "canceled"
+          ]
+        },
+        "outcome": {
+          "enum": ["published", "skipped", "canceled", null]
+        },
+        "entry": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/EntryRef"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "verification": {
+          "type": ["object", "null"],
+          "additionalProperties": false,
+          "required": ["algorithm", "digest", "bytes", "level"],
+          "properties": {
+            "algorithm": {
+              "const": "sha256"
+            },
+            "digest": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "bytes": {
+              "type": "string",
+              "pattern": "^(0|[1-9][0-9]*)$"
+            },
+            "level": {
+              "const": "destination-sha256"
+            }
+          }
+        },
+        "error": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ArchiveError"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "controls": {
+          "type": "array",
+          "items": {
+            "enum": ["pause", "resume", "cancel", "retry"]
+          },
+          "maxItems": 4
+        },
+        "cleanupState": {
+          "enum": ["not_needed", "pending", "confirmed", "failed"]
+        }
+      }
+    },
+    "DownloadRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["requestId", "source"],
+      "properties": {
+        "requestId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "source": {
+          "$ref": "#/$defs/EntryRef"
+        }
+      }
+    },
+    "DownloadRepresentation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "requestId",
+        "representationId",
+        "serverJobId",
+        "source",
+        "bytes",
+        "strongETag",
+        "sha256",
+        "mediaTypeHint",
+        "expiresAt",
+        "contentPath",
+        "transferToken",
+        "immutableSnapshot",
+        "redirectFree",
+        "state",
+        "transferExpiresAt",
+        "cleanupState"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": 1
+        },
+        "requestId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "representationId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "serverJobId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "source": {
+          "$ref": "#/$defs/EntryRef"
+        },
+        "bytes": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]*)$",
+          "maxLength": 20
+        },
+        "strongETag": {
+          "type": "string",
+          "pattern": "^\"[^\"\\r\\n]+\"$"
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "mediaTypeHint": {
+          "type": ["string", "null"],
+          "maxLength": 128
+        },
+        "expiresAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "contentPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1024
+        },
+        "transferToken": {
+          "type": ["string", "null"],
+          "minLength": 32,
+          "maxLength": 512
+        },
+        "immutableSnapshot": {
+          "const": true
+        },
+        "redirectFree": {
+          "const": true
+        },
+        "state": {
+          "const": "ready"
+        },
+        "transferExpiresAt": {
+          "type": ["string", "null"],
+          "format": "date-time"
+        },
+        "cleanupState": {
+          "enum": ["not_needed", "pending", "confirmed", "failed"]
+        }
+      }
+    },
+    "CompleteDownload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["requestId", "bytes", "sha256"],
+      "properties": {
+        "requestId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "bytes": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]*)$",
+          "maxLength": 20
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      }
+    },
+    "Call": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["method", "params"],
+      "properties": {
+        "method": {
+          "enum": [
+            "metadata.home",
+            "metadata.listFolder",
+            "metadata.stat",
+            "metadata.listTrash",
+            "operations.execute",
+            "operations.reconcile",
+            "operations.listReceipts"
+          ]
+        },
+        "params": {
+          "type": "object"
+        }
+      }
+    },
+    "Capability": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "supported", "allowed", "availability", "reason"],
+      "properties": {
+        "name": {
+          "enum": [
+            "list",
+            "read",
+            "write",
+            "mkdir",
+            "rename",
+            "move",
+            "copy",
+            "trash",
+            "restore",
+            "purge",
+            "capacity",
+            "folderSearch",
+            "resumableUpload",
+            "resumableDownload",
+            "atomicKeepBoth",
+            "replaceViaTrash",
+            "safePreview",
+            "saveAs"
+          ]
+        },
+        "supported": {
+          "type": "boolean"
+        },
+        "allowed": {
+          "type": "boolean"
+        },
+        "availability": {
+          "enum": ["available", "volume_unavailable", "resource_limited"]
+        },
+        "reason": {
+          "type": ["string", "null"],
+          "maxLength": 500
+        }
+      }
+    },
+    "AuthorizedRoot": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "label", "ref", "available", "capabilities"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "ref": {
+          "$ref": "#/$defs/EntryRef"
+        },
+        "available": {
+          "type": "boolean"
+        },
+        "capabilities": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Capability"
+          },
+          "maxItems": 32
+        }
+      }
+    },
+    "Capacity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["scope", "label", "rootIds", "usedBytes", "totalBytes"],
+      "properties": {
+        "scope": {
+          "enum": ["volume", "authorized_aggregate"]
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "rootIds": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "maxItems": 128
+        },
+        "usedBytes": {
+          "type": ["string", "null"],
+          "pattern": "^(0|[1-9][0-9]*)$"
+        },
+        "totalBytes": {
+          "type": ["string", "null"],
+          "pattern": "^(0|[1-9][0-9]*)$"
+        }
+      }
+    },
+    "Profile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "serverId",
+        "accountId",
+        "deviceSessionId",
+        "capabilitiesVersion",
+        "roots",
+        "capabilities",
+        "limits",
+        "capacity",
+        "route"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": 1
+        },
+        "serverId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "accountId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "deviceSessionId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "capabilitiesVersion": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "roots": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/AuthorizedRoot"
+          },
+          "maxItems": 128
+        },
+        "capabilities": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Capability"
+          },
+          "maxItems": 32
+        },
+        "limits": {
+          "$ref": "#/$defs/Limits"
+        },
+        "capacity": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Capacity"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "route": {
+          "enum": ["unknown", "local", "remote"]
+        }
+      }
+    },
+    "DownloadPreparing": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "requestId",
+        "representationId",
+        "serverJobId",
+        "state",
+        "pollAfterMs",
+        "cleanupState"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": 1
+        },
+        "requestId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "representationId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "serverJobId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "state": {
+          "const": "preparing"
+        },
+        "pollAfterMs": {
+          "type": "integer",
+          "minimum": 1000,
+          "maximum": 30000
+        },
+        "cleanupState": {
+          "enum": ["not_needed", "pending", "confirmed", "failed"]
+        }
+      }
+    },
+    "ArchiveError": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "code",
+        "message",
+        "recovery",
+        "retryable",
+        "safeServerCode",
+        "correlationId"
+      ],
+      "properties": {
+        "code": {
+          "type": "string",
+          "maxLength": 100
+        },
+        "message": {
+          "type": "string",
+          "maxLength": 1000
+        },
+        "recovery": {
+          "type": "string",
+          "maxLength": 100
+        },
+        "retryable": {
+          "type": "boolean"
+        },
+        "safeServerCode": {
+          "type": ["string", "null"],
+          "maxLength": 100
+        },
+        "correlationId": {
+          "type": ["string", "null"],
+          "maxLength": 256
+        }
+      }
+    },
+    "UploadAcknowledgement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schemaVersion", "transferId", "durableOffset"],
+      "properties": {
+        "schemaVersion": {
+          "const": 1
+        },
+        "transferId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "durableOffset": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]*)$"
+        }
+      }
+    },
+    "DownloadCanceled": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "requestId",
+        "representationId",
+        "serverJobId",
+        "state",
+        "cleanupState",
+        "error"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": 1
+        },
+        "requestId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "representationId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "serverJobId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "state": {
+          "const": "canceled"
+        },
+        "cleanupState": {
+          "enum": ["not_needed", "pending", "confirmed", "failed"]
+        },
+        "error": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ArchiveError"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "DownloadCompleteReceipt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "requestId",
+        "representationId",
+        "acknowledged"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": 1
+        },
+        "requestId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "representationId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "acknowledged": {
+          "const": true
+        }
+      }
+    },
+    "DownloadManifestRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["requestId", "source"],
+      "properties": {
+        "requestId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "source": {
+          "$ref": "#/$defs/EntryRef"
+        }
+      }
+    },
+    "ManifestEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["relativePath", "kind", "source", "bytes"],
+      "properties": {
+        "relativePath": {
+          "type": "string",
+          "maxLength": 4096
+        },
+        "kind": {
+          "enum": ["file", "directory"]
+        },
+        "source": {
+          "$ref": "#/$defs/EntryRef"
+        },
+        "bytes": {
+          "type": ["string", "null"],
+          "pattern": "^(0|[1-9][0-9]*)$"
+        }
+      }
+    },
+    "DownloadManifest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "requestId",
+        "manifestId",
+        "source",
+        "entries",
+        "totalBytes",
+        "fileCount",
+        "directoryCount",
+        "expiresAt",
+        "consistency"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": 1
+        },
+        "requestId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "manifestId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "source": {
+          "$ref": "#/$defs/EntryRef"
+        },
+        "entries": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ManifestEntry"
+          },
+          "minItems": 1,
+          "maxItems": 1000
+        },
+        "totalBytes": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]*)$",
+          "maxLength": 19
+        },
+        "fileCount": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999
+        },
+        "directoryCount": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000
+        },
+        "expiresAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "consistency": {
+          "const": "captured_entry_refs"
+        }
+      }
+    }
+  },
+  "x-routes": {
+    "GET /mobile/v1/discovery": {
+      "response": "Discovery",
+      "auth": "none"
+    },
+    "POST /mobile/v1/sessions": {
+      "request": "Login",
+      "response": "Session",
+      "auth": "none"
+    },
+    "POST /mobile/v1/sessions/refresh": {
+      "request": "Refresh",
+      "response": "Session",
+      "auth": "refresh body"
+    },
+    "DELETE /mobile/v1/sessions/current": {
+      "auth": "access"
+    },
+    "GET /mobile/v1/profile": {
+      "auth": "access",
+      "response": "Profile"
+    },
+    "POST /mobile/v1/call": {
+      "request": "Call",
+      "auth": "access",
+      "response": "method DTO from models.ts"
+    },
+    "POST /mobile/v1/uploads": {
+      "request": "UploadRequest",
+      "response": "UploadAdmission",
+      "auth": "access"
+    },
+    "GET /mobile/v1/uploads/{id}": {
+      "auth": "access",
+      "response": "UploadAdmission (no token minting)"
+    },
+    "PUT /mobile/v1/uploads/{id}/content?offset={decimal}": {
+      "auth": "transfer",
+      "request": "known-length file body",
+      "response": "UploadAcknowledgement"
+    },
+    "POST /mobile/v1/uploads/{id}/finalize": {
+      "auth": "access",
+      "response": "UploadAdmission"
+    },
+    "POST /mobile/v1/uploads/{id}/cancel": {
+      "auth": "access",
+      "response": "UploadAdmission"
+    },
+    "POST /mobile/v1/downloads": {
+      "request": "DownloadRequest",
+      "response": "202 DownloadPreparing | 200 DownloadRepresentation",
+      "auth": "access"
+    },
+    "GET /mobile/v1/downloads/{id}": {
+      "auth": "access",
+      "response": "202 DownloadPreparing | 200 DownloadRepresentation (no token minting) | 200 DownloadCanceled"
+    },
+    "GET|HEAD /mobile/v1/downloads/{id}/content": {
+      "auth": "transfer",
+      "response": "immutable full/range bytes"
+    },
+    "POST /mobile/v1/downloads/{id}/complete": {
+      "auth": "access",
+      "request": "CompleteDownload",
+      "response": "DownloadCompleteReceipt"
+    },
+    "POST /mobile/v1/uploads/{id}/authorize": {
+      "auth": "access",
+      "request": "{}",
+      "response": "UploadAdmission with renewed transfer authority"
+    },
+    "POST /mobile/v1/uploads/{id}/control": {
+      "auth": "access",
+      "request": {
+        "action": ["pause", "resume", "retry"]
+      },
+      "response": "UploadAdmission"
+    },
+    "POST /mobile/v1/downloads/{id}/authorize": {
+      "auth": "access",
+      "request": "{}",
+      "response": "DownloadRepresentation with finite transferToken/transferExpiresAt"
+    },
+    "POST /mobile/v1/downloads/{id}/cancel": {
+      "auth": "access",
+      "request": "{}",
+      "response": "DownloadCanceled"
+    },
+    "POST /mobile/v1/download-manifests": {
+      "auth": "access",
+      "request": "DownloadManifestRequest",
+      "response": "DownloadManifest (captured refs, no aggregate hash or ZIP)"
+    }
+  }
+}

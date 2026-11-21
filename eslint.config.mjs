@@ -1,0 +1,3 @@
+import js from '@eslint/js';
+import ts from 'typescript-eslint';
+export default ts.config({ignores:['.runtime/**','**/dist/**','node_modules/**','release/**','test-results/**']},js.configs.recommended,...ts.configs.recommended,{files:['**/*.{ts,tsx}'],rules:{'@typescript-eslint/no-explicit-any':'error','@typescript-eslint/no-unused-vars':['error',{argsIgnorePattern:'^_'}]}},{files:['**/*.{js,cjs,mjs}'],rules:{'@typescript-eslint/no-require-imports':'off'},languageOptions:{globals:{require:'readonly',module:'readonly',__dirname:'readonly',process:'readonly',console:'readonly',URL:'readonly',setTimeout:'readonly'}}});

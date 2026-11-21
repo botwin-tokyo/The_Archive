@@ -1,0 +1,3 @@
+export function bytes(value:string|null|undefined):string {if(value==null)return 'Unknown';const amount=BigInt(value);const units=['B','KB','MB','GB','TB','PB'];let unit=0,divisor=1n;while(amount/divisor>=1000n&&unit<units.length-1){divisor*=1000n;unit++;}return unit===0?`${amount} B`:`${Number(amount*10n/divisor)/10} ${units[unit]}`;}
+export function date(value:string|null|undefined):string{return value?new Date(value).toISOString().slice(0,16).replace('T',' '):'Unknown';}
+export function label(value:string):string{return value.split('-').map(part=>part[0]?.toUpperCase()+part.slice(1)).join(' ');}

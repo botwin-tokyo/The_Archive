@@ -1,0 +1,33 @@
+[Unit]
+Description=Isolated GitHub repository backup worker
+After=network-online.target local-fs.target
+Wants=network-online.target
+RequiresMountsFor=@GIT_MOUNT@ @RUNTIME_ROOT@
+[Service]
+Type=simple
+User=archive-git
+Group=archive-git
+Environment=PYTHONPATH=@RUNTIME_ROOT@/archive-console-service/backend
+ExecStart=/usr/bin/python3 -m archive_backend.git_worker --config /etc/archive-console/git-worker.json
+RuntimeDirectory=archive-git
+RuntimeDirectoryMode=0750
+UMask=0027
+Restart=on-failure
+RestartSec=10
+TimeoutStopSec=30
+KillMode=control-group
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+CapabilityBoundingSet=
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+ReadWritePaths=@GIT_MOUNT@ @RUNTIME_ROOT@/archive-console-git
+MemoryMax=1G
+TasksMax=64
+LimitNOFILE=1024
+[Install]
+WantedBy=multi-user.target

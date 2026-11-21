@@ -1,0 +1,341 @@
+{
+  "schemaVersion": 1,
+  "methods": {
+    "radio.status": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    },
+    "radio.tracks.list": {
+      "type": "object",
+      "properties": {
+        "location": {
+          "type": "object",
+          "properties": {
+            "driveId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 256
+            },
+            "path": {
+              "type": "string",
+              "maxLength": 4096
+            }
+          },
+          "required": [
+            "driveId",
+            "path"
+          ],
+          "additionalProperties": false
+        },
+        "query": {
+          "type": "string",
+          "maxLength": 255
+        },
+        "cursor": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100
+        }
+      },
+      "required": [
+        "location"
+      ],
+      "additionalProperties": false
+    },
+    "radio.batches.create": {
+      "type": "object",
+      "properties": {
+        "requestId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "stationId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        }
+      },
+      "required": [
+        "requestId",
+        "stationId",
+        "name"
+      ],
+      "additionalProperties": false
+    },
+    "radio.batches.add": {
+      "type": "object",
+      "properties": {
+        "requestId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "batchId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "tracks": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 256
+              },
+              "driveId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 256
+              },
+              "path": {
+                "type": "string",
+                "maxLength": 4096
+              },
+              "revision": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              }
+            },
+            "required": [
+              "id",
+              "driveId",
+              "path",
+              "revision"
+            ],
+            "additionalProperties": false
+          },
+          "minItems": 1,
+          "maxItems": 128
+        }
+      },
+      "required": [
+        "requestId",
+        "batchId",
+        "revision",
+        "tracks"
+      ],
+      "additionalProperties": false
+    },
+    "radio.batches.remove": {
+      "type": "object",
+      "properties": {
+        "requestId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "batchId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "itemIds": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "minItems": 1,
+          "maxItems": 1024,
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "requestId",
+        "batchId",
+        "revision",
+        "itemIds"
+      ],
+      "additionalProperties": false
+    },
+    "radio.batches.reorder": {
+      "type": "object",
+      "properties": {
+        "requestId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "batchId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "itemIds": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "minItems": 1,
+          "maxItems": 1024,
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "requestId",
+        "batchId",
+        "revision",
+        "itemIds"
+      ],
+      "additionalProperties": false
+    },
+    "radio.batches.list": {
+      "type": "object",
+      "properties": {
+        "cursor": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    },
+    "radio.batches.get": {
+      "type": "object",
+      "properties": {
+        "batchId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "cursor": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100
+        }
+      },
+      "required": [
+        "batchId"
+      ],
+      "additionalProperties": false
+    },
+    "radio.batches.push": {
+      "type": "object",
+      "properties": {
+        "requestId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "batchId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      "required": [
+        "requestId",
+        "batchId",
+        "revision"
+      ],
+      "additionalProperties": false
+    },
+    "radio.batches.control": {
+      "type": "object",
+      "properties": {
+        "requestId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "batchId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "action": {
+          "enum": [
+            "pause",
+            "resume",
+            "cancel",
+            "retry-failed",
+            "skip-failed"
+          ]
+        }
+      },
+      "required": [
+        "requestId",
+        "batchId",
+        "revision",
+        "action"
+      ],
+      "additionalProperties": false
+    },
+    "radio.requests.reconcile": {
+      "type": "object",
+      "properties": {
+        "requestId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "operation": {
+          "enum": [
+            "create",
+            "add",
+            "remove",
+            "reorder",
+            "push",
+            "control"
+          ]
+        }
+      },
+      "required": [
+        "requestId",
+        "operation"
+      ],
+      "additionalProperties": false
+    }
+  }
+}

@@ -1,0 +1,218 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Archive Radio Receiver",
+    "version": "1.0.0"
+  },
+  "security": [
+    {
+      "receiverBearer": []
+    }
+  ],
+  "paths": {
+    "/archive-radio/v1/capabilities": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "Receiver identity and limits",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "version",
+                    "receiverId",
+                    "contentTypes",
+                    "maxUploadBytes"
+                  ],
+                  "properties": {
+                    "version": {
+                      "const": 1
+                    },
+                    "receiverId": {
+                      "type": "string"
+                    },
+                    "contentTypes": {
+                      "type": "array",
+                      "items": {
+                        "const": "audio/mpeg"
+                      }
+                    },
+                    "maxUploadBytes": {
+                      "type": "string",
+                      "pattern": "^[0-9]+$"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/archive-radio/v1/deliveries/{deliveryId}": {
+      "parameters": [
+        {
+          "name": "deliveryId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      ],
+      "get": {
+        "responses": {
+          "200": {
+            "description": "Durably registered MP3",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Receipt"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No committed or in-flight delivery; same ID may be retried"
+          },
+          "202": {
+            "description": "Reconciliation in progress; JSON state=receiving"
+          }
+        }
+      }
+    },
+    "/archive-radio/v1/deliveries/{deliveryId}/content": {
+      "parameters": [
+        {
+          "name": "deliveryId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      ],
+      "put": {
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Archive-SHA256",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            }
+          },
+          {
+            "in": "header",
+            "name": "Content-Length",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 1073741824
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "audio/mpeg": {
+              "schema": {
+                "type": "string",
+                "format": "binary"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Durably registered MP3",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Receipt"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Durably registered MP3",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Receipt"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Same ID with conflicting hash or length"
+          },
+          "422": {
+            "description": "Invalid hash or MP3"
+          },
+          "429": {
+            "description": "Retry later; Retry-After seconds"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "receiverBearer": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    },
+    "schemas": {
+      "Receipt": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "version",
+          "receiverId",
+          "deliveryId",
+          "trackId",
+          "sha256",
+          "sizeBytes",
+          "receivedAt"
+        ],
+        "properties": {
+          "version": {
+            "const": 1
+          },
+          "receiverId": {
+            "type": "string",
+            "maxLength": 64
+          },
+          "deliveryId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "trackId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "sizeBytes": {
+            "type": "string",
+            "pattern": "^[0-9]+$"
+          },
+          "receivedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      }
+    }
+  }
+}
